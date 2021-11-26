@@ -1,7 +1,7 @@
 import asyncio
 import os
 from tkinter import *
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, ttk
 import youtube_dl
 import youtubesearchpython
 from youtubesearchpython.__future__ import VideosSearch
@@ -24,9 +24,9 @@ def createfolder():
 
 def enter(search):
     topResultList = youtubesearchpython.VideosSearch(search, limit=1)
-    updatewindow("Searching song")
+    search.updatewindow("Searching song")
     result = topResultList.result(mode=ResultMode.dict)
-    updatewindow('song found.')
+    search.updatewindow('song found.')
     title = ((result["result"])[0])["title"]
     url = ((result["result"])[0])["link"]
     SAVE_PATH = '/'.join(os.getcwd().split('/')[:3]) + '/Downloads'
@@ -104,6 +104,12 @@ label.place(relx=0.36, rely=0.16)
 entry = Entry(topFrame, text="Example playlist Name")
 entry.insert(0, "SongList")
 entry.place(relwidth=0.5, relheight=0.1, relx=0.25, rely=0.25, )
+current_var = StringVar()
+combobox = ttk.Combobox(topFrame, textvariable=current_var)
+combobox["values"] = ("Download songs from local .txt",
+                      "Download from youtube online playlist",)
+combobox.place(relwidth=0.5, relheight=0.1, relx=0.25, rely=0.37, )
+combobox.current(0)
 buttomFrame = Frame(root, bg="White")
 buttomFrame.place(relwidth=0.8, relheight=0.4, relx=0.1, rely=0.51)
 scrollbar = Scrollbar(buttomFrame)
@@ -112,10 +118,8 @@ scrollbar.pack(side="right", fill=Y)
 myButton = Button(topFrame, text="Click here to Download", padx=10, pady=0, fg="#2c2f33", bg="#99aab5",
                   command=loadFile)
 myButton.place(relx=0.34, rely=0.5)
-# myLabel1 = Label(canvas, text="I hate you")
-# myLabel2 = Label(canvas, text="I hate you too.")
-# myLabel1.grid(row=0, column=0)
-# myLabel2.grid(row=1, column=0)
+
+
 
 root.mainloop()
 
