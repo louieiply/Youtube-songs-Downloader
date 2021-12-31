@@ -5,7 +5,7 @@ from tkinter import filedialog, messagebox, ttk
 import youtube_dl
 import youtubesearchpython
 from youtubesearchpython.__future__ import VideosSearch
-from youtubesearchpython.internal.constants import ResultMode
+from youtubesearchpython import ResultMode
 
 
 class main():
@@ -21,14 +21,16 @@ class main():
         os.mkdir(desktop)
 
     def enter(self,search):
-        topResultList = youtubesearchpython.VideosSearch(search, limit=1)
-        search.updatewindow("Searching song")
-        result = topResultList.result(mode=ResultMode.dict)
-        search.updatewindow('song found.')
-        title = ((result["result"])[0])["title"]
-        url = ((result["result"])[0])["link"]
+        self.topResultList = youtubesearchpython.VideosSearch(search, limit=1)
+        self.updatewindow("Searching song")
+        self.result = self.topResultList.result(mode=ResultMode.dict)
+        self.updatewindow('song found.')
+        title = ((self.result["result"])[0])["title"]
+        self.title = title
+        url = ((self.result["result"])[0])["link"]
+        self.url = url
         SAVE_PATH = '/'.join(os.getcwd().split('/')[:3]) + '/Downloads'
-
+        print(title)
         YoutubeVideo = {
             "format": "best", "postprocessors": [{
                 "key": "FFmpegExtractAudio",
@@ -43,8 +45,8 @@ class main():
         self.update()
         with youtube_dl.YoutubeDL(YoutubeVideo) as ydl:
             self.updatewindow("Downloading song. ")
-            self.updatewindow("Song title: " + title)
-            ydl.download([url])
+            self.updatewindow("Song title: " + self.title)
+            ydl.download([self.url])
 
     def loadFile(self):
         try:
@@ -55,12 +57,12 @@ class main():
             filename = filedialog.askopenfilename(initialdir="/", title="Select File",
                                                   filetypes=(("text files", "*.txt"),
                                                              ("all files", "*.*")))
-            if filename is "":
+            if filename == "":
                 return
             self.createfolder()
             with open(filename, "r") as file:
                 for line in file:
-                    print(line)
+                    print("print song name: "+line)
                     songlist.append(line)
                     self.enter(line)
         except FileNotFoundError:
@@ -99,10 +101,11 @@ class main():
         self.entry.insert(0, "SongList")
         self.entry.place(relwidth=0.5, relheight=0.1, relx=0.25, rely=0.25, )
         current_var = StringVar()
-        self.combobox = ttk.Combobox(self.topFrame, textvariable=current_var)
+        combobox = ttk.Combobox(self.topFrame, textvariable=current_var)
+        self.combobox = combobox
         self.combobox["values"] = ("Download songs from local .txt",
                                    "Download from youtube online playlist",)
-        self.combobox.place(relwidth=0.5, relheight=0.1, relx=0.25, rely=0.37, )
+        self.combobox.place(relwidth=0.5, relheight=0.1, relx=0.25, rely=0.37)
         self.combobox.current(0)
         self.buttomFrame = Frame(self.root, bg="White")
         self.buttomFrame.place(relwidth=0.8, relheight=0.4, relx=0.1, rely=0.51)
