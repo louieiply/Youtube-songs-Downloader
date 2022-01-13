@@ -1,14 +1,14 @@
-import asyncio
+from Observer import Observer
+from EventListener import Observable
 import os
 from tkinter import *
 from tkinter import filedialog, messagebox, ttk
-import youtube_dl
 import youtubesearchpython
-from youtubesearchpython.__future__ import VideosSearch
 from youtubesearchpython import ResultMode
 
 
-class main():
+class window():
+    
 
     def checkplaylist(self):
         desktop = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
@@ -43,10 +43,14 @@ class main():
         }
         # path + "/%(title)s.mp3
         self.update()
-        with youtube_dl.YoutubeDL(YoutubeVideo) as ydl:
-            self.updatewindow("Downloading song. ")
-            self.updatewindow("Song title: " + self.title)
-            ydl.download([self.url])
+        self.updatewindow("Downloading song. ")
+        self.updatewindow("Song title: " + self.title)
+        self.entercountid =+ 1
+        entity = Observer(self.entercountid,"song",YoutubeVideo,self.url)
+        print("Count run:" + str(self.entercountid))
+        self.observerlist.attach(entity)
+
+
 
     def loadFile(self):
         try:
@@ -65,6 +69,7 @@ class main():
                     print("print song name: "+line)
                     songlist.append(line)
                     self.enter(line)
+            self.observerlist.exec()
         except FileNotFoundError:
             print("exit window without action")
             messagebox.showinfo("Please input a file with at least 1 song")
@@ -93,6 +98,8 @@ class main():
         self.root.resizable(width=False, height=False)
         self.canvas = Canvas(self.root, height=600, width=600, bg="#2c2f33")
         self.canvas.pack()
+        self.entercountid = 0
+        self.observerlist = Observable()
         self.topFrame = Frame(self.root, bg="#7289da")
         self.topFrame.place(relwidth=0.8, relheight=0.4, relx=0.1, rely=0.1)
         self.label = Label(self.topFrame, text="Enter the song list name:", bg="#7289da")
@@ -120,7 +127,7 @@ class main():
 
 root = Tk()
 songlist = []
-window = main(root)
+window = window(root)
 root.mainloop()
 
 # if __name__ == "__main__":
